@@ -21,6 +21,8 @@
 
 `Netlify`
 
+https://exquisite-smakager-d618c1.netlify.app/
+
 ---
 
 ### 🤙🏻 APIs
