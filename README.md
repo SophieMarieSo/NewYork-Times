@@ -25,4 +25,4 @@
 
 ### 🤙🏻 APIs
 
-[TMDB]([https://developer.themoviedb.org/reference/movie-recommendations](https://newsapi.org/docs/endpoints/top-headlines))
+[newsapi](https://newsapi.org/docs/endpoints/top-headlines)
