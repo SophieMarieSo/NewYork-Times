@@ -22,8 +22,8 @@ const render = () => {
         const description =
             news.description == ''
                 ? '내용 없음'
-                : news.description.length > 200
-                ? news.description.substring(0, 200) + '...'
+                : news.description.length > 100
+                ? news.description.substring(0, 100) + '...'
                 : news.description;
         const newsImg =
             news.urlToImage == ''
@@ -43,7 +43,7 @@ const render = () => {
                     <div class="col-lg-8 col-12">
                         <h3 class="pb-2">${news.title}</h3>
                         <p>${description}</p>
-                        <div><span class='source'>${source}</span> ${date}</div>
+                        <div><span class='source'>${source}</span>${date}</div>
                     </div>
                 </div>`;
     });
@@ -54,5 +54,23 @@ const render = () => {
 searchBtn.addEventListener('click', () =>
     document.getElementById('search-field').classList.toggle('active')
 );
+
+const navBtn = document.getElementById('nav-btn');
+navBtn.addEventListener('click', () => {
+    document.getElementById('side-menu');
+    const sideMenu = document.getElementById('side-menu');
+
+    if (sideMenu.style.display === 'none' || sideMenu.style.display === '')
+        sideMenu.style.display = 'flex';
+});
+
+const menuCloseBtn = document.getElementById('menu-close-btn');
+menuCloseBtn.addEventListener('click', () => {
+    const sideMenu = document.getElementById('side-menu');
+
+    console.log(sideMenu.style);
+
+    if (sideMenu.style.display === 'flex') sideMenu.style.display = 'none';
+});
 
 getLatestNews();
