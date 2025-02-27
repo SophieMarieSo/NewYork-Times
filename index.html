@@ -20,16 +20,16 @@
                 <i class="fa-solid fa-magnifying-glass" id="search-btn"></i>
                 <div id="search-field">
                     <input
+                        id="search-input"
                         type="text"
                         class="form-control form-control-sm"
-                        type="search"
                         placeholder="Search"
                         aria-label="Search"
                     />
                     <button
                         type="button"
                         class="btn btn-outline-secondary btn-sm"
-                        type="submit"
+                        onclick="getNewsByKeyword()"
                     >
                         검색
                     </button>

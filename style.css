@@ -117,6 +117,10 @@
     }
 }
 
+.no-data {
+    height: 500px;
+}
+
 @media (max-width: 768px) {
     .container {
         margin-top: 45px;

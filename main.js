@@ -17,6 +17,12 @@ const getLatestNews = async () => {
 
 const render = () => {
     let newsHtml = ``;
+    if (newsList.length === 0) {
+        newsHtml = `<h1 class="text-center mt-5 pt-5">No Data</h1>`;
+
+        document.getElementById('news-board').innerHTML = newsHtml;
+        return;
+    }
 
     newsHtml = newsList.map((news) => {
         const description =
@@ -57,20 +63,31 @@ searchBtn.addEventListener('click', () =>
 );
 
 const navBtn = document.getElementById('nav-btn');
-navBtn.addEventListener('click', () => {
-    document.getElementById('side-menu');
-    const sideMenu = document.getElementById('side-menu');
+const sideMenu = document.getElementById('side-menu');
 
+navBtn.addEventListener('click', () => {
     if (sideMenu.style.display === 'none' || sideMenu.style.display === '')
         sideMenu.style.display = 'flex';
 });
 
 const menuCloseBtn = document.getElementById('menu-close-btn');
 menuCloseBtn.addEventListener('click', () => {
-    const sideMenu = document.getElementById('side-menu');
-
     if (sideMenu.style.display === 'flex') sideMenu.style.display = 'none';
 });
+
+const getNewsByKeyword = async () => {
+    const keyword = document.getElementById('search-input').value;
+    const url = new URL(
+        // `https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}`
+        `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&q=${keyword}`
+    );
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+    newsList = data.articles;
+
+    render();
+};
 
 const getNewsByCategory = async (e) => {
     const category = e.target.textContent.toLowerCase();
@@ -88,5 +105,13 @@ const getNewsByCategory = async (e) => {
 
 const menus = document.querySelectorAll('.menus button');
 menus.forEach((menu) => menu.addEventListener('click', getNewsByCategory));
+
+const sideMenus = document.querySelectorAll('#side-menu a');
+sideMenus.forEach((menu) => menu.addEventListener('click', getNewsByCategory));
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768)
+        document.getElementById('side-menu').style.display = 'none';
+});
 
 getLatestNews();
