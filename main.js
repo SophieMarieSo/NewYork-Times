@@ -22,7 +22,7 @@ const render = () => {
         const description =
             news.description == ''
                 ? '내용 없음'
-                : news.description.length > 100
+                : news.description?.length > 100
                 ? news.description.substring(0, 100) + '...'
                 : news.description;
         const newsImg =
@@ -69,9 +69,24 @@ const menuCloseBtn = document.getElementById('menu-close-btn');
 menuCloseBtn.addEventListener('click', () => {
     const sideMenu = document.getElementById('side-menu');
 
-    console.log(sideMenu.style);
-
     if (sideMenu.style.display === 'flex') sideMenu.style.display = 'none';
 });
+
+const getNewsByCategory = async (e) => {
+    const category = e.target.textContent.toLowerCase();
+    const url = new URL(
+        // `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
+        `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
+    );
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+    newsList = data.articles;
+
+    render();
+};
+
+const menus = document.querySelectorAll('.menus button');
+menus.forEach((menu) => menu.addEventListener('click', getNewsByCategory));
 
 getLatestNews();
