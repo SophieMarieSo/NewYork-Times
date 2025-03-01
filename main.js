@@ -6,7 +6,7 @@ let url = new URL(
 );
 let totalResults = 0;
 let page = 1;
-const pageSize = 10;
+const pageSize = 5;
 const groupSize = 5;
 
 const getNews = async () => {
@@ -18,10 +18,16 @@ const getNews = async () => {
     const data = await resp.json();
 
     if (resp.status !== 200) {
+      page = 0;
+      totalPage = 0;
+      renderPagination();
       throw new Error(data.message);
     }
 
     if (data.articles.length === 0) {
+      page = 0;
+      totalPage = 0;
+      renderPagination();
       throw new Error('No Result for this Search');
     }
 
@@ -35,6 +41,7 @@ const getNews = async () => {
 };
 
 const getLatestNews = async () => {
+  page = 1;
   url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
@@ -98,6 +105,7 @@ menuCloseBtn.addEventListener('click', () => {
 
 const getNewsByKeyword = async () => {
   const keyword = document.getElementById('search-input').value;
+  page = 1;
   url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&q=${keyword}`
@@ -107,6 +115,7 @@ const getNewsByKeyword = async () => {
 
 const getNewsByCategory = async (e) => {
   const category = e.target.textContent.toLowerCase();
+  page = 1;
   url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
@@ -139,9 +148,17 @@ const paginationRender = () => {
   let firstPage = lastPage - (groupSize - 1);
   firstPage = lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
 
-  let paginationHtml = `<li class="page-item">
+  let paginationHtml =
+    page === 1
+      ? ''
+      : `<li class="page-item" onclick="moveToPage(${1})">
+            <a class="page-link" href="#" aria-label="First">
+              <span aria-hidden="true">&lt&lt;</span>
+            </a>
+          </li>
+          <li class="page-item" onclick="moveToPage(${page - 1})">
             <a class="page-link" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
+              <span aria-hidden="true">&lt;</span>
             </a>
           </li>`;
 
@@ -151,9 +168,18 @@ const paginationRender = () => {
     }" href="#" onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`;
   }
 
-  paginationHtml += `<li class="page-item">
-            <a class="page-link" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
+  paginationHtml +=
+    page === totalPages
+      ? ''
+      : `
+  <li class="page-item" onclick="moveToPage(${page + 1})">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&gt;</span>
+            </a>
+          </li>
+  <li class="page-item" onclick="moveToPage(${totalPages})">
+            <a class="page-link" aria-label="Last">
+              <span aria-hidden="true">&gt&gt;</span>
             </a>
           </li>`;
 
@@ -163,7 +189,7 @@ const paginationRender = () => {
 const moveToPage = async (pageNum) => {
   page = pageNum;
   await getNews();
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 getLatestNews();
