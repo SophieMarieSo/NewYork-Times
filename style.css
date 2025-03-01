@@ -104,6 +104,10 @@
     text-decoration: none;
     padding: 5px 0;
   }
+
+  a:hover {
+    cursor: pointer;
+  }
 }
 
 .news {
@@ -121,8 +125,10 @@
   }
 }
 
-.no-data {
-  height: 500px;
+.page-item {
+  a {
+    cursor: pointer;
+  }
 }
 
 @media (max-width: 768px) {

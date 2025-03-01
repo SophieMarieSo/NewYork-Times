@@ -1,12 +1,22 @@
 // const API_KEY = '102e645856ae42da864a934bfb72a4a0';
 let newsList = [];
 const searchBtn = document.getElementById('search-btn');
+let url = new URL(
+  `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
+);
+let totalResults = 0;
+let page = 1;
+const pageSize = 10;
+const groupSize = 5;
 
-const getNews = async (url) => {
-  const resp = await fetch(url);
-  const data = await resp.json();
-
+const getNews = async () => {
   try {
+    url.searchParams.set('page', page);
+    url.searchParams.set('pageSize', pageSize);
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
     if (resp.status !== 200) {
       throw new Error(data.message);
     }
@@ -16,18 +26,21 @@ const getNews = async (url) => {
     }
 
     newsList = data.articles;
+    totalResults = data.totalResults;
     render();
+    paginationRender();
   } catch (error) {
     errorRender(error.message);
   }
 };
 
 const getLatestNews = async () => {
-  const url = new URL(
+  url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
   );
-  getNews(url);
+
+  await getNews();
 };
 
 const render = () => {
@@ -85,20 +98,21 @@ menuCloseBtn.addEventListener('click', () => {
 
 const getNewsByKeyword = async () => {
   const keyword = document.getElementById('search-input').value;
-  const url = new URL(
+  url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&q=${keyword}`
   );
-  getNews(url);
+  await getNews(url);
 };
 
 const getNewsByCategory = async (e) => {
   const category = e.target.textContent.toLowerCase();
-  const url = new URL(
+  url = new URL(
     // `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
   );
-  getNews(url);
+  await getNews(url);
+  sideMenu.style.display = 'none';
 };
 
 const menus = document.querySelectorAll('.menus button');
@@ -115,6 +129,41 @@ window.addEventListener('resize', () => {
 const errorRender = (msg) => {
   const errorHtml = `<div class="alert alert-danger mt-3 text-center" role="alert">${msg}</div>`;
   document.getElementById('news-board').innerHTML = errorHtml;
+};
+
+const paginationRender = () => {
+  const pageGroup = Math.ceil(page / groupSize);
+  const totalPages = Math.ceil(totalResults / pageSize);
+  let lastPage = pageGroup * groupSize;
+  lastPage = lastPage > totalPages ? totalPages : pageGroup * groupSize;
+  let firstPage = lastPage - (groupSize - 1);
+  firstPage = lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
+
+  let paginationHtml = `<li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>`;
+
+  for (let i = firstPage; i <= lastPage; i++) {
+    paginationHtml += `<li class="page-item ${
+      i === page ? 'active' : ''
+    }" href="#" onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`;
+  }
+
+  paginationHtml += `<li class="page-item">
+            <a class="page-link" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>`;
+
+  document.querySelector('.pagination').innerHTML = paginationHtml;
+};
+
+const moveToPage = async (pageNum) => {
+  page = pageNum;
+  await getNews();
+  window.scrollTo(0, 0);
 };
 
 getLatestNews();
